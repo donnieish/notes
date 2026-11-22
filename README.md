@@ -2,6 +2,10 @@
 
 A personal blog rendered as static pages for GitHub Pages. Notion remains the source of truth for articles, attachments, translations and appearance. The default branch contains site code. The build copies only content selected for publication and visual assets used by the website.
 
+## RSS subscription
+
+Add the site's `rss.xml` URL to a feed reader, or copy the RSS link in the footer. The Pages build uses the same published Notion articles as the blog and includes the latest 30 with summaries and links to the original articles. All three site languages share one feed. No separate service or sync task is required.
+
 ## Run or verify a sync
 
 Open **Actions → Sync Notion and publish donnie. → Run workflow**.

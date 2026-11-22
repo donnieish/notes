@@ -3,6 +3,7 @@ import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import {join,dirname} from 'node:path';
 import {App} from './app';
 import {Post} from '../components/post';
+import {renderRss} from './rss';
 import type {Snapshot} from './types';
 import {escapeJson,validatePublicSnapshot} from '../scripts/public-content';
 import {initialTheme,settingsCss,themeBootScript,flag,text} from '../lib/site-settings';
@@ -12,7 +13,9 @@ type Stored=Snapshot&{articleData:Snapshot['articles'];siteUrl:string;basePath:s
 export async function prerender(){
  const stored=JSON.parse(await readFile('.cache/snapshot.json','utf8')) as Stored;
  const template=await readFile('dist/index.html','utf8'),origin=stored.siteUrl;
- const {articleData,siteUrl,basePath,revision,...snapshot}=stored;
+ const {articleData,siteUrl,basePath,revision,...publicData}=stored;
+ const rssPath=origin?basePath+'/rss.xml':undefined;
+ const snapshot={...publicData,rssPath};
  validatePublicSnapshot(snapshot);
  const paths=['/','/archive','/about','/settings',...snapshot.articles.map(a=>'/post/'+a.id)];
  const pages=paths.flatMap(path=>[
@@ -34,7 +37,8 @@ export async function prerender(){
   const analytics=data.analyticsOrigin?'<meta name="donnie-analytics" content="'+esc(data.analyticsOrigin)+'"/>':'';
   const image=article?.cover||data.settings.assets.share;
   const css=settingsCss(data.settings);
-  const tags=`<title>${esc(title)}</title><meta name="description" content="${esc(description)}"/><meta name="referrer" content="strict-origin-when-cross-origin"/>${isSettings||is404||!flag(data.settings,'seo.index')?'<meta name="robots" content="noindex,nofollow"/>':''}${origin&&!is404?`<link rel="canonical" href="${esc(canonical)}"/>`:''}${!isSettings&&!is404?`<meta property="og:title" content="${esc(title)}"/><meta property="og:description" content="${esc(description)}"/><meta property="og:type" content="${article?'article':'website'}"/>${image?`<meta property="og:image" content="${esc(toUrl(image))}"/>`:''}`:''}${analytics}<link rel="icon" href="${esc(data.settings.assets.favicon)}"/><style>${css}</style><script>${themeBootScript(data.settings)}</script>`;
+  const rss=rssPath&&!isSettings&&!is404?`<link rel="alternate" type="application/rss+xml" title="${esc(copy['site.title'])} (RSS)" href="${esc(rssPath)}"/>`:'';
+  const tags=`<title>${esc(title)}</title><meta name="description" content="${esc(description)}"/><meta name="referrer" content="strict-origin-when-cross-origin"/>${isSettings||is404||!flag(data.settings,'seo.index')?'<meta name="robots" content="noindex,nofollow"/>':''}${origin&&!is404?`<link rel="canonical" href="${esc(canonical)}"/>`:''}${!isSettings&&!is404?`<meta property="og:title" content="${esc(title)}"/><meta property="og:description" content="${esc(description)}"/><meta property="og:type" content="${article?'article':'website'}"/>${image?`<meta property="og:image" content="${esc(toUrl(image))}"/>`:''}`:''}${analytics}${rss}<link rel="icon" href="${esc(data.settings.assets.favicon)}"/><style>${css}</style><script>${themeBootScript(data.settings)}</script>`;
   let html=template.replace('<html lang="zh-CN">',()=>`<html lang="${htmlLanguages[locale]}" data-theme="${initialTheme(data.settings)}" data-design="apple-2026" data-site-settings="${data.settings.version}" data-glass="${flag(data.settings,'show.glass')?'on':'off'}">`)
    .replace('<title>donnie.</title>',()=>tags)
    .replace('<div id="root"></div>',()=>`<div id="root">${body}</div><script id="donnie-data" type="application/json">${escapeJson({snapshot:data,path})}</script>`);
@@ -42,6 +46,10 @@ export async function prerender(){
   const file=is404?'dist/404.html':join('dist',path,'index.html');await mkdir(dirname(file),{recursive:true});await writeFile(file,html);
  }
  await writeFile('dist/.nojekyll','');
+ if(rssPath){
+  const copy=snapshot.copies.zh;
+  await writeFile('dist/rss.xml',renderRss(origin,{title:copy['site.title'],description:copy['site.description']},snapshot.articles));
+ }
  if(origin&&flag(snapshot.settings,'seo.index')){
   const urls=pages.filter(x=>!x.legacy&&!x.is404&&!x.path.endsWith('/settings')).map(x=>`<url><loc>${esc(origin+x.path+'/')}</loc></url>`).join('');
   await writeFile('dist/sitemap.xml',`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`);
