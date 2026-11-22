@@ -46,7 +46,9 @@ export function JournalPage({initialView,feed,copy,site,locale}:{initialView:Jou
     </section>
     {flag(site,'show.aboutTopics')&&<div className="about-topics">{topics.map(({slot,title,text:description})=><div key={slot}><TopicIcon slot={slot}/><h3 className="copy-lines">{title}</h3><p className="copy-lines">{description}</p></div>)}</div>}
     <AboutLicense copy={copy} site={site}/>
-    <span className="about-engine-mark" role="img" aria-label={engineMarkAlt[locale]} title="Super Heavy" style={{WebkitMaskImage:engineMarkMask,maskImage:engineMarkMask}}/>
+    <div className="about-engine-row"><div className="about-engine-panel">
+      <span className="about-engine-mark" role="img" aria-label={engineMarkAlt[locale]} title="Super Heavy" style={{WebkitMaskImage:engineMarkMask,maskImage:engineMarkMask}}/>
+    </div></div>
   </div></>;
  return <Shell journal={{initialView,feed}}><JournalScreens initialFeed={feed} home={home} archive={<ArchiveBrowser feed={feed} canManage={canManage}/>} about={about}/></Shell>;
 }
