@@ -19,3 +19,5 @@ Use a GitHub Free public repository and the standard Linux runner. Pages uses th
 The /settings page links to the protected repository settings and offers device-only shortcut settings. The public site does not accept keys. Access counts require a separately activated analytics origin; without it the site displays articles and sends no counting requests. For content rights, see the website's About page. Font checksums and licenses are in public/fonts.
 
 Run DONNIE_DEMO=1 pnpm build for a local demo. CI rejects demo mode.
+
+For a local build of live content with HEIC uploads, install `heif-convert` with an HEVC decoder. The Pages workflow installs it automatically and publishes the converted WebP, keeping the Notion original unchanged.

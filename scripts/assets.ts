@@ -1,13 +1,42 @@
-import {mkdir,readFile,writeFile} from 'node:fs/promises';
+import {execFile} from 'node:child_process';
+import {mkdir,mkdtemp,readFile,rm,writeFile} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
 import {join} from 'node:path';
+import {promisify} from 'node:util';
 import sharp from 'sharp';
 import {contentHash,notionStorage,publicDownload} from './public-content.ts';
 import {rideMapSvgDigests} from './ride-map-svgs.ts';
 
 type AssetKind='cover'|'image'|'document'|'media';
 const fileLimit=24*1024*1024,totalLimit=700*1024*1024;
+const imagePixelLimit=120_000_000;
+const runFile=promisify(execFile);
 const safeLocal=/^\/(?:images\/)?[a-zA-Z0-9_.-]+\.(?:svg|jpe?g|png|ico|webp)$/;
 const safeExternal=(u:URL)=>u.protocol==='https:'&&!u.username&&!u.password&&!/(?:X-Amz-|[?&](?:token|signature|secret)=)/i.test(u.search);
+
+export async function imageToWebp(content:Buffer,kind:'cover'|'image'){
+ const image=sharp(content,{limitInputPixels:imagePixelLimit,animated:true});
+ const info=await image.metadata();
+ if(!['jpeg','png','webp','gif','svg','heif','tiff'].includes(info.format||''))throw Error('Uploaded image format is unsupported');
+ if((info.pages||1)>150)throw Error('An animated image exceeds 150 frames');
+ const width=kind==='cover'?1600:2560;
+ const encode=(source:typeof image)=>source.rotate().resize({width,height:width,fit:'inside',withoutEnlargement:true}).webp({quality:kind==='cover'?85:90}).toBuffer();
+ // Sharp's bundled decoder handles AVIF. HEVC uploads need the system HEIC decoder.
+ if(info.format!=='heif'||info.compression!=='hevc')return encode(image);
+ if(!info.width||!info.height||info.width*info.height>imagePixelLimit)throw Error('An uploaded HEIC image exceeds the pixel limit');
+ if((info.pages||1)>1)throw Error('Upload a single still image instead of a multi-image HEIC file');
+ const folder=await mkdtemp(join(tmpdir(),'donnie-heic-'));
+ try{
+  const input=join(folder,'source.heic'),output=join(folder,'decoded.png');
+  await writeFile(input,content);
+  await runFile('heif-convert',[input,output],{timeout:30_000,killSignal:'SIGKILL',maxBuffer:256*1024});
+  return await encode(sharp(output,{limitInputPixels:imagePixelLimit}));
+ }catch{
+  throw Error('Could not convert an uploaded HEIC image. Check heif-convert or replace the upload in Notion with a JPEG or PNG.');
+ }finally{
+  await rm(folder,{recursive:true,force:true});
+ }
+}
 
 export function localizeAssets(base:string){
  let publishedBytes=0;const seen=new Set<string>(),pending=new Map<string,Promise<string>>();
@@ -36,12 +65,7 @@ export function localizeAssets(base:string){
    if(kind==='image'&&rideMapSvgDigests.has(contentHash(content))){
     suffix='.svg';
    }else if(kind==='cover'||kind==='image'){
-    const image=sharp(content,{limitInputPixels:120_000_000,animated:true});
-    const info=await image.metadata();
-    if(!['jpeg','png','webp','gif','svg','heif','tiff'].includes(info.format||''))throw Error('Uploaded image format is unsupported');
-    if((info.pages||1)>150)throw Error('An animated image exceeds 150 frames');
-    const width=kind==='cover'?1600:2560;
-    content=await image.rotate().resize({width,height:width,fit:'inside',withoutEnlargement:true}).webp({quality:kind==='cover'?85:90}).toBuffer();
+    content=await imageToWebp(content,kind);
     suffix='.webp';
    }else if(content.subarray(0,5).toString()==='%PDF-')suffix='.pdf';
    else if(content.subarray(4,8).toString()==='ftyp')suffix=mime.startsWith('audio/')?'.m4a':'.mp4';

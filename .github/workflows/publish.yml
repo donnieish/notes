@@ -44,6 +44,10 @@ jobs:
         id: pages
       - name: Install pinned dependencies
         run: pnpm install --frozen-lockfile
+      - name: Install HEIC decoder for Notion images
+        run: |
+          sudo apt-get -qq update
+          sudo apt-get -qq install --no-install-recommends libheif-examples libheif-plugin-libde265
       - name: Validate code
         run: pnpm check && pnpm test
       - name: Validate Notion and build
