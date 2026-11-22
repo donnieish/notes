@@ -24,6 +24,7 @@ const engineMarkAlt={
  ja:'Super Heavy の33基のエンジン配置',
  en:'Super Heavy’s 33-engine layout',
 } as const;
+const engineMarkMask=`url("${sitePath('/images/super-heavy-engines.svg')}")`;
 
 export function JournalPage({initialView,feed,copy,site,locale}:{initialView:JournalView;feed:Feed;copy:SiteCopy;site:SiteSettings;locale:Locale}){
  const canManage=false;
@@ -45,7 +46,7 @@ export function JournalPage({initialView,feed,copy,site,locale}:{initialView:Jou
     </section>
     {flag(site,'show.aboutTopics')&&<div className="about-topics">{topics.map(({slot,title,text:description})=><div key={slot}><TopicIcon slot={slot}/><h3 className="copy-lines">{title}</h3><p className="copy-lines">{description}</p></div>)}</div>}
     <AboutLicense copy={copy} site={site}/>
-    <img className="about-engine-mark" src={sitePath('/images/super-heavy-engines.svg')} alt={engineMarkAlt[locale]} title="Super Heavy" width={112} height={112} loading="lazy" decoding="async"/>
+    <span className="about-engine-mark" role="img" aria-label={engineMarkAlt[locale]} title="Super Heavy" style={{WebkitMaskImage:engineMarkMask,maskImage:engineMarkMask}}/>
   </div></>;
  return <Shell journal={{initialView,feed}}><JournalScreens initialFeed={feed} home={home} archive={<ArchiveBrowser feed={feed} canManage={canManage}/>} about={about}/></Shell>;
 }
