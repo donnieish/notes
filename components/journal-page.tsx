@@ -12,11 +12,19 @@ import {BrandGlyph} from './brand-icon';
 
 import {localizedHref} from '@/lib/i18n';
 import {flag,text} from '@/lib/site-settings';
+import {sitePath} from '@/lib/static-path';
 import type {JournalView} from '@/lib/journal-navigation';
 import type {Feed} from '@/lib/blog-server';
 import type {SiteCopy} from '@/lib/site-copy';
 import type {SiteSettings} from '@/lib/site-settings';
 import type {Locale} from '@/lib/i18n';
+
+const engineMarkAlt={
+ zh:'Super Heavy 的 33 台发动机排列',
+ ja:'Super Heavy の33基のエンジン配置',
+ en:'Super Heavy’s 33-engine layout',
+} as const;
+
 export function JournalPage({initialView,feed,copy,site,locale}:{initialView:JournalView;feed:Feed;copy:SiteCopy;site:SiteSettings;locale:Locale}){
  const canManage=false;
  const showImage=flag(site,'show.heroImage'),title=copy['about.title'];
@@ -36,6 +44,8 @@ export function JournalPage({initialView,feed,copy,site,locale}:{initialView:Jou
       <div className="about-story-copy">{copy['about.eyebrow']&&<span className="eyebrow copy-lines">{copy['about.eyebrow']}</span>}<h2 id="about-story-title" className="copy-lines">{copy['about.statementTitle']}</h2><p className="copy-lines">{copy['about.paragraphOne']}</p>{copy['about.paragraphTwo']&&<p className="copy-lines">{copy['about.paragraphTwo']}</p>}</div>
     </section>
     {flag(site,'show.aboutTopics')&&<div className="about-topics">{topics.map(({slot,title,text:description})=><div key={slot}><TopicIcon slot={slot}/><h3 className="copy-lines">{title}</h3><p className="copy-lines">{description}</p></div>)}</div>}
-    <AboutLicense copy={copy} site={site}/></div></>;
+    <AboutLicense copy={copy} site={site}/>
+    <img className="about-engine-mark" src={sitePath('/images/super-heavy-engines.svg')} alt={engineMarkAlt[locale]} title="Super Heavy" width={112} height={112} loading="lazy" decoding="async"/>
+  </div></>;
  return <Shell journal={{initialView,feed}}><JournalScreens initialFeed={feed} home={home} archive={<ArchiveBrowser feed={feed} canManage={canManage}/>} about={about}/></Shell>;
 }

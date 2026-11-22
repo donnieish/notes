@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="112" height="112" viewBox="0 0 112 112" role="img" aria-labelledby="engine-mark-title">
+  <title id="engine-mark-title">Super Heavy engine layout</title>
+  <g fill="#4c4c4c">
+    <!-- Outer 20 -->
+    <circle cx="102.570" cy="48.624" r="6.1"/>
+    <circle cx="102.570" cy="63.376" r="6.1"/>
+    <circle cx="98.011" cy="77.406" r="6.1"/>
+    <circle cx="89.340" cy="89.340" r="6.1"/>
+    <circle cx="77.406" cy="98.011" r="6.1"/>
+    <circle cx="63.376" cy="102.570" r="6.1"/>
+    <circle cx="48.624" cy="102.570" r="6.1"/>
+    <circle cx="34.594" cy="98.011" r="6.1"/>
+    <circle cx="22.660" cy="89.340" r="6.1"/>
+    <circle cx="13.989" cy="77.406" r="6.1"/>
+    <circle cx="9.430" cy="63.376" r="6.1"/>
+    <circle cx="9.430" cy="48.624" r="6.1"/>
+    <circle cx="13.989" cy="34.594" r="6.1"/>
+    <circle cx="22.660" cy="22.660" r="6.1"/>
+    <circle cx="34.594" cy="13.989" r="6.1"/>
+    <circle cx="48.624" cy="9.430" r="6.1"/>
+    <circle cx="63.376" cy="9.430" r="6.1"/>
+    <circle cx="77.406" cy="13.989" r="6.1"/>
+    <circle cx="89.340" cy="22.660" r="6.1"/>
+    <circle cx="98.011" cy="34.594" r="6.1"/>
+    <!-- Middle 10 -->
+    <circle cx="84.300" cy="56.000" r="6.1"/>
+    <circle cx="78.895" cy="72.634" r="6.1"/>
+    <circle cx="64.745" cy="82.915" r="6.1"/>
+    <circle cx="47.255" cy="82.915" r="6.1"/>
+    <circle cx="33.105" cy="72.634" r="6.1"/>
+    <circle cx="27.700" cy="56.000" r="6.1"/>
+    <circle cx="33.105" cy="39.366" r="6.1"/>
+    <circle cx="47.255" cy="29.085" r="6.1"/>
+    <circle cx="64.745" cy="29.085" r="6.1"/>
+    <circle cx="78.895" cy="39.366" r="6.1"/>
+    <!-- Inner 3 -->
+    <circle cx="56.000" cy="66.100" r="6.1"/>
+    <circle cx="47.253" cy="50.950" r="6.1"/>
+    <circle cx="64.747" cy="50.950" r="6.1"/>
+  </g>
+</svg>
