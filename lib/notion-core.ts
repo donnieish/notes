@@ -1,4 +1,7 @@
 import {notionReads} from './read-cache.ts';
+
+const ARTICLE_BLOCK_LIMIT = 2_400;
+
 export type NotionObject = Record<string, any>;
 export type BlogConfig = {
   token: string;
@@ -254,7 +257,9 @@ export class NotionClient {
       const blocks:NotionObject[]=[];
       for (const block of data.results || []) {
         if (block.archived || block.in_trash) continue;
-        if (++budget.count > 1200) throw new BlogError('这篇文章过长，请拆成几篇文章后发布。', 413);
+        if (++budget.count > ARTICLE_BLOCK_LIMIT) {
+          throw new BlogError(`这篇文章超过 ${ARTICLE_BLOCK_LIMIT} 个 Notion 区块，请减少区块或拆分文章后发布。`, 413);
+        }
         blocks.push(block);
       }
       // At most two independent subtrees load together, preserving author order.

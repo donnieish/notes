@@ -93,7 +93,12 @@ async function makeSnapshot():Promise<BuildSnapshot>{
   if(publicationIsProtected(page))throw Error('An article marked for publication also has a password. Resolve it in Notion before publishing.');
   const article=normalizeArticle(page);
   article.cover=page.cover?await assets.localize(mediaUrl(page.cover)||'','cover'):null;
-  article.blocks=await prepareBlocks(await client.blocks(page.id));
+  try {
+   article.blocks=await prepareBlocks(await client.blocks(page.id));
+  } catch (error) {
+   const detail=error instanceof Error?error.message:'读取文章时发生未知错误。';
+   throw new Error(`《${article.title}》同步失败。${detail}`, {cause:error});
+  }
   article.minutes=Math.max(1,Math.ceil((JSON.stringify(article.blocks).match(/plain_text/g)?.length||1)/7));
   full.push(article);
  }
