@@ -75,6 +75,19 @@
 .article-body .notion-embed-frame.video{aspect-ratio:16/9;height:auto}
 .article-body .notion-embed-frame.widget{height:420px}
 .article-body :is(.notion-pdf-frame,.notion-html-frame){height:560px}
+.article-body .notion-pdf-preview:empty{display:none}
+.article-body .notion-mobile-pdf{min-width:0;overflow:hidden;border:1px solid var(--line);border-radius:var(--content-radius,12px);background:var(--paper)}
+.article-body .notion-pdf-toolbar{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:6px 8px;border-bottom:1px solid var(--line)}
+.article-body .notion-pdf-toolbar form{display:flex;align-items:center;justify-content:center;gap:6px;min-width:0;margin:0}
+.article-body .notion-pdf-toolbar :is(button,input){box-sizing:border-box;height:44px;padding:0 8px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--text);font:500 13px var(--sans)}
+.article-body .notion-pdf-toolbar input{width:42px;padding:0 4px;text-align:center;font-size:16px;font-variant-numeric:tabular-nums}
+.article-body .notion-pdf-toolbar form>span{color:var(--muted);font:500 12px var(--sans);font-variant-numeric:tabular-nums;white-space:nowrap}
+.article-body .notion-pdf-toolbar button{cursor:pointer;white-space:nowrap}
+.article-body .notion-pdf-toolbar button:disabled{opacity:.45;cursor:default}
+.article-body .notion-pdf-page-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.article-body .notion-pdf-status{margin:0;min-height:128px;display:grid;place-items:center;padding:16px;text-align:center;color:var(--muted);font-size:.85em}
+.article-body .notion-pdf-content{min-width:0}
+.article-body .notion-pdf-content canvas{display:block}
 .article-body a.notion-file-link{display:flex;gap:10px;align-items:center;flex-wrap:wrap;border:1px solid var(--line);border-radius:var(--content-radius,12px);padding:12px 15px;margin-top:10px;color:var(--text);font-size:.82em;text-decoration:none;background:var(--paper);overflow-wrap:anywhere}
 .article-body .notion-file-link>span:last-child{color:var(--muted);margin-left:auto}
 .article-body .notion-breadcrumb{font-size:.8em;color:var(--muted);margin:10px 0 24px}

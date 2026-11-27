@@ -10,6 +10,7 @@ import {Rich} from './notion-rich';
 import {MathExpression} from './notion-math';
 import {NotionCodeBlock} from './notion-code-block';
 import {NotionTabs} from './notion-tabs';
+import {PdfPreview} from './pdf-preview';
 import {localizedHref,type Locale} from '@/lib/i18n';
 import 'katex/dist/katex.min.css';
 import './notion-content.css';
@@ -66,12 +67,11 @@ export function NotionContent({blocks,pageId,demo=false,copy=defaultCopy,heading
       }
       case 'pdf':case 'file':{
         const name=typeof data.name==='string'?data.name:copy['post.file'];
-        // Sandboxing disables browsers' native PDF viewers, even with allow-scripts.
-        element=<figure className="notion-attachment">{block.type==='pdf'&&<iframe className="notion-pdf-frame" src={src} title={name} loading="lazy" referrerPolicy="no-referrer"/>}<SiteLink className="notion-file-link" href={src||'#'+block.id} target="_blank" rel="noopener noreferrer" download={src.endsWith('.bin')?name:undefined}><span aria-hidden="true">↗</span> {name} <span>{copy['post.openFile']}</span></SiteLink>{caption(data)}</figure>;break;
+        element=<figure className="notion-attachment">{block.type==='pdf'&&<PdfPreview src={src} name={name} locale={locale}/>}<SiteLink className="notion-file-link" href={src||'#'+block.id} target="_blank" rel="noopener noreferrer" download={src.endsWith('.bin')?name:undefined}><span aria-hidden="true">↗</span> {name} <span>{copy['post.openFile']}</span></SiteLink>{caption(data)}</figure>;break;
       }
       case 'embed':{
         const frame=embedTarget(data.url),file=src.endsWith('.pdf')?'pdf':undefined,label=textOf(data.caption)||copy['post.media'];
-        element=<figure className="notion-media">{frame?<iframe className={'notion-embed-frame '+frame.kind} src={frame.src} title={label} loading="lazy" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms" allow="fullscreen; picture-in-picture; encrypted-media" allowFullScreen referrerPolicy="no-referrer"/>:file?<iframe className={file==='pdf'?'notion-pdf-frame':'notion-html-frame'} src={src} title={label} loading="lazy" sandbox={file==='pdf'?undefined:'allow-scripts allow-downloads'} referrerPolicy="no-referrer"/>:null}<SiteLink className="notion-file-link" href={frame?.src||src||articleHref(data.url,context)||'#'+block.id} target="_blank" rel="noopener noreferrer" download={src.endsWith('.bin')?true:undefined}>{copy['post.openEmbed']} ↗</SiteLink>{caption(data)}</figure>;break;
+        element=<figure className="notion-media">{frame?<iframe className={'notion-embed-frame '+frame.kind} src={frame.src} title={label} loading="lazy" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms" allow="fullscreen; picture-in-picture; encrypted-media" allowFullScreen referrerPolicy="no-referrer"/>:file?<PdfPreview src={src} name={label} locale={locale}/>:null}<SiteLink className="notion-file-link" href={frame?.src||src||articleHref(data.url,context)||'#'+block.id} target="_blank" rel="noopener noreferrer" download={src.endsWith('.bin')?true:undefined}>{copy['post.openEmbed']} ↗</SiteLink>{caption(data)}</figure>;break;
       }
       case 'bookmark':case 'link_preview':{
         const link=articleHref(data.url,context);element=link?<SiteLink className="bookmark-link" href={link} target={link.startsWith('#')||link.startsWith('/')?undefined:'_blank'} rel="noopener noreferrer">{textOf(data.caption)?rich(data.caption):link} ↗</SiteLink>:null;break;

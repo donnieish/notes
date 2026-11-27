@@ -100,10 +100,11 @@ test('Media, attachments and public references render without embedding whole No
     block('private-db','child_database',{title:'不要泄露的数据库'},[block('db-body','paragraph',{rich_text:rich('不要泄露的记录')})]),
   ]);
   assert.ok(html.includes('<audio controls=""')&&html.includes('<video controls=""'));
-  assert.ok(html.includes('class="notion-pdf-frame"')&&html.includes('附件.txt'));
-  const pdfFrames=[...html.matchAll(/<iframe\b[^>]*class="notion-pdf-frame"[^>]*>/g)].map(match=>match[0]);
-  assert.equal(pdfFrames.length,2);
-  assert.ok(pdfFrames.every(frame=>!frame.includes('sandbox=')),'Native PDF viewers must not be blocked by iframe sandboxing');
+  assert.equal([...html.matchAll(/class="notion-pdf-preview"/g)].length,2);
+  assert.ok(html.includes('附件.txt'));
+  assert.ok(!/<iframe\b[^>]*\.pdf/.test(html),'Choose the PDF reader before starting the download');
+  assert.ok(html.includes('href="'+staticPath('pdf','pdf')+'"'));
+  assert.ok(html.includes('href="'+staticPath('uploaded-pdf','pdf')+'"'));
   assert.ok(html.includes('https://www.youtube-nocookie.com/embed/abcdefghijk'));
   assert.ok(html.includes('href="'+staticPath('uploaded-html','bin')+'"'));
   assert.ok(!html.includes('class="notion-html-frame"'),'An uploaded HTML document is downloaded, not executed on the blog origin');
